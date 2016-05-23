@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets" id="http://yourdomain/SimpleSensor" version="1.0.0" viewmodes="fullscreen">
+    <tizen:application id="jA178rrw6Z.AccelerometerTutorial" package="jA178rrw6Z" required_version="2.2.1.3"/>
+    <content src="index.html"/>
+    <feature name="http://tizen.org/feature/screen.size.normal.320.320"/>
+    <feature name="http://tizen.org/feature/location.gps"/>
+    <feature name="http://developer.samsung.com/tizen/feature/heart_rate_monitor"/>
+    <feature name="http://developer.samsung.com/tizen/feature/sensor.ultraviolet"/>
+    <feature name="http://tizen.org/feature/sensor.accelerometer"/>
+    <feature name="http://tizen.org/feature/sensor.barometer"/>
+    <feature name="http://tizen.org/feature/sensor.gyroscope"/>
+    <feature name="http://tizen.org/feature/sensor.magnetometer"/>
+    <feature name="http://tizen.org/feature/sensor.photometer"/>
+    <feature name="http://tizen.org/feature/GPS"/>
+    <feature name="http://developer.samsung.com/tizen/feature/samsung_extension"/>
+    <feature name="http://tizen.org/feature/microphone"/>
+    <feature name="http://tizen.org/feature/camera"/>
+    <icon src="icon.png"/>
+    <name>Accelerometer Tutorial </name>
+    <tizen:privilege name="http://tizen.org/privilege/application.launch"/>
+    <tizen:privilege name="http://tizen.org/privilege/filesystem.read"/>
+    <tizen:privilege name="http://developer.samsung.com/privilege/accessoryprotocol"/>
+    <tizen:privilege name="http://developer.samsung.com/privilege/healthinfo"/>
+    <tizen:privilege name="http://developer.samsung.com/privilege/irled"/>
+    <tizen:privilege name="http://tizen.org/privilege/system"/>
+    <tizen:privilege name="http://tizen.org/privilege/filesystem.write"/>
+    <tizen:privilege name="http://tizen.org/privilege/power"/>
+    <tizen:privilege name="http://tizen.org/privilege/application.info"/>
+    <tizen:privilege name="http://tizen.org/privilege/location"/>
+    <tizen:privilege name="http://tizen.org/privilege/alarm"/>
+    <tizen:privilege name="http://tizen.org/privilege/audiorecorder"/>
+    <tizen:privilege name="http://tizen.org/privilege/camera"/>
+    <tizen:privilege name="http://tizen.org/privilege/systemmanager"/>
+    <tizen:privilege name="http://tizen.org/privilege/telephony"/>
+    <tizen:setting background-support="enable" encryption="disable" hwkey-event="enable"/>
+</widget>
