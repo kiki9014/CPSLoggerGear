@@ -134,10 +134,10 @@ $(window).load(function(){
 	HAM = (tizen&&tizen.humanactivitymonitor)||(window.webapis&&window.webapis.motion);	//Heart Rate is another application, not sensor service
 	
 	//start each sensor
-	UVSensor.start(onStartSensor, onFailSensor);
-	LSensor.start(onStartSensor, onFailSensor);
-	MagSensor.start(onStartSensor, onFailSensor);
-	PSensor.start(onStartSensor, onFailSensor);
+//	UVSensor.start(onStartSensor, onFailSensor);
+//	LSensor.start(onStartSensor, onFailSensor);
+//	MagSensor.start(onStartSensor, onFailSensor);
+//	PSensor.start(onStartSensor, onFailSensor);
 	
 	//add listener. listener is called when sensor value has changed
 	UVSensor.setChangeListener(function(data){
