@@ -134,10 +134,10 @@ $(window).load(function(){
 	HAM = (tizen&&tizen.humanactivitymonitor)||(window.webapis&&window.webapis.motion);	//Heart Rate is another application, not sensor service
 	
 	//start each sensor
-	UVSensor.start(onStartSensor, onFailSensor);
-	LSensor.start(onStartSensor, onFailSensor);
+//	UVSensor.start(onStartSensor, onFailSensor);
+//	LSensor.start(onStartSensor, onFailSensor);
 	MagSensor.start(onStartSensor, onFailSensor);
-	PSensor.start(onStartSensor, onFailSensor);
+//	PSensor.start(onStartSensor, onFailSensor);
 	
 	//add listener. listener is called when sensor value has changed
 	UVSensor.setChangeListener(function(data){
@@ -195,45 +195,45 @@ $(window).load(function(){
 //	console.log("Debug Probe 5");
 	
 	//get acceleration and angular velocity (reference : Mozilla Web API)
-	window.addEventListener('devicemotion', function(e) {
-		var ax,ay,az,rotx,roty,rotz,interval,currTime, acc = [], gyro = [];
-		
-		ax = e.accelerationIncludingGravity.x;
-		ay = -e.accelerationIncludingGravity.y;
-		az = -e.accelerationIncludingGravity.z;
-		rotx = e.rotationRate.alpha ;
-		roty = e.rotationRate.beta ;
-		rotz = e.rotationRate.gamma ;
-		interval = e.interval;
-		
-		acc[0] = ax;
-		acc[1] = ay;
-		acc[2] = az;
-		
-		gyro[0] = rotx;
-		gyro[1] = roty;
-		gyro[2] = rotz;
-		
-//		data2Write[0] = interval;
-//		data2Write[1] = ax;
-//		data2Write[2] = ay;
-//		data2Write[3] = az;
-//		data2Write[4] = rotx;
-//		data2Write[5] = roty;
-//		data2Write[6] = rotz;
-
-		document.getElementById("interv").innerHTML =  'Interval : ' +  interval;
-		document.getElementById("xaccel").innerHTML =  'AccX : ' +  ax;
-		document.getElementById("yaccel").innerHTML = 'AccY : ' + ay;
-		document.getElementById("zaccel").innerHTML = 'AccZ : ' + az;
-		
-		document.getElementById("rotx").innerHTML = 'Rot X : ' + rotx ;
-		document.getElementById("roty").innerHTML = 'Rot Y : ' + roty ;
-		document.getElementById("rotz").innerHTML = 'Rot Z : ' + rotz ;
-		
-		dataSave(sensorType.ACC,acc);
-		dataSave(sensorType.GYRO,gyro);
-	});
+//	window.addEventListener('devicemotion', function(e) {
+//		var ax,ay,az,rotx,roty,rotz,interval,currTime, acc = [], gyro = [];
+//		
+//		ax = e.accelerationIncludingGravity.x;
+//		ay = -e.accelerationIncludingGravity.y;
+//		az = -e.accelerationIncludingGravity.z;
+//		rotx = e.rotationRate.alpha ;
+//		roty = e.rotationRate.beta ;
+//		rotz = e.rotationRate.gamma ;
+//		interval = e.interval;
+//		
+//		acc[0] = ax;
+//		acc[1] = ay;
+//		acc[2] = az;
+//		
+//		gyro[0] = rotx;
+//		gyro[1] = roty;
+//		gyro[2] = rotz;
+//		
+////		data2Write[0] = interval;
+////		data2Write[1] = ax;
+////		data2Write[2] = ay;
+////		data2Write[3] = az;
+////		data2Write[4] = rotx;
+////		data2Write[5] = roty;
+////		data2Write[6] = rotz;
+//
+//		document.getElementById("interv").innerHTML =  'Interval : ' +  interval;
+//		document.getElementById("xaccel").innerHTML =  'AccX : ' +  ax;
+//		document.getElementById("yaccel").innerHTML = 'AccY : ' + ay;
+//		document.getElementById("zaccel").innerHTML = 'AccZ : ' + az;
+//		
+//		document.getElementById("rotx").innerHTML = 'Rot X : ' + rotx ;
+//		document.getElementById("roty").innerHTML = 'Rot Y : ' + roty ;
+//		document.getElementById("rotz").innerHTML = 'Rot Z : ' + rotz ;
+//		
+//		dataSave(sensorType.ACC,acc);
+//		dataSave(sensorType.GYRO,gyro);
+//	});
 
 	
 //	console.log("Debug Probe 6");
