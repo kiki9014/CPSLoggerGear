@@ -5,32 +5,19 @@ function whoAmI(){
 }
 
 var sensorType = {
-		ACC : 1,
-		GYRO : 2,
-		MAG : 3,
-		UV : 4,
-		Light : 5,
-		Pressure : 6,
-		HRM : 7,
-		Battery : 8,
-		Memory : 9
+		Light : 5
 };
 
 $(window).load(function(){
 
 	var onSave = false, docuDir, newFile, fileStream, startTime, SService, UVSensor, LSensor, MagSensor, PSensor, HAM, data2Write = [], bgBtn, saveBtn, endSaveBtn, touchCnt=0, surveyCnt = 1;
 
-	var localPort, remotePort, isAwake, handleCPU, watchID, surveyAlarm, handleBatt, listenID, buffer = "", saveID, HRVal, delayVal = 0, totDel = 0;
+	var localPort, remotePort, isAwake, handleCPU, watchID, surveyAlarm, handleBatt, listenID, buffer = "", saveID, HRVal = 78, delayVal = 0, totDel = 0;
 	
 	startLogging();
 	
 	function endSensor(){
-		UVSensor.stop();
 		LSensor.stop();
-		MagSensor.stop();
-		PSensor.stop();
-		if (isAwake)
-			HAM.stop("HRM");
 	}
 	
 	//end save. close stream
@@ -110,132 +97,22 @@ $(window).load(function(){
 	
 	//Sensor service is require to start each sensor
 	SService = window.webapis&&window.webapis.sensorservice;	//tizen.sensorservice is not worked
-	UVSensor = SService.getDefaultSensor("ULTRAVIOLET");
 	LSensor = SService.getDefaultSensor("LIGHT");
-	MagSensor = SService.getDefaultSensor("MAGNETIC");
-	PSensor = SService.getDefaultSensor("PRESSURE");
-	HAM = (tizen&&tizen.humanactivitymonitor)||(window.webapis&&window.webapis.motion);	//Heart Rate is another application, not sensor service
-	
 	//start each sensor
-	UVSensor.start(onStartSensor, onFailSensor);
 	LSensor.start(onStartSensor, onFailSensor);
-	MagSensor.start(onStartSensor, onFailSensor);
-	PSensor.start(onStartSensor, onFailSensor);
 	
 	//add listener. listener is called when sensor value has changed
-	UVSensor.setChangeListener(function(data){
-		document.getElementById("UV").innerHTML = 'UV : ' + data.ultravioletLevel;
-
-		dataSave(sensorType.UV, data.ultravioletLevel);
-	});
-
-	MagSensor.setChangeListener(function(data){
-		mag = [];
-		
-		document.getElementById("xmag").innerHTML = 'Mag X : ' + data.x;
-		document.getElementById("ymag").innerHTML = 'Mag Y : ' + data.y;
-		document.getElementById("zmag").innerHTML = 'Mag Z : ' + data.z;
-		
-		mag[0] = data.x;
-		mag[1] = data.y;
-		mag[2] = data.z;
-		
-		dataSave(sensorType.MAG,mag);
-	});
-	
 	LSensor.setChangeListener(function(data){
 		document.getElementById("light").innerHTML = 'Light : ' + data.lightLevel;
 		
 		dataSave(sensorType.Light, data.lightLevel);
 	});
 	
-	PSensor.setChangeListener(function(data){
-		document.getElementById("press").innerHTML = 'Pressure : ' + data.pressure;
-		
-		dataSave(sensorType.Pressure, data.pressure);
-	});
-
-	//start Heart Rate sensor
-	
-	function readHR(data){
-		document.getElementById("heart").innerHTML = 'HeartRate : ' + data.heartRate;
-		
-		HRVal = data.heartRate;
-		dataSave(sensorType.HRM, data.heartRate);
-	}
-	
-	//get acceleration and angular velocity (reference : Mozilla Web API)
-	window.addEventListener('devicemotion', function(e) {
-		var ax,ay,az,rotx,roty,rotz,interval,currTime, acc = [], gyro = [];
-		
-		ax = e.accelerationIncludingGravity.x;
-		ay = -e.accelerationIncludingGravity.y;
-		az = -e.accelerationIncludingGravity.z;
-		rotx = e.rotationRate.alpha ;
-		roty = e.rotationRate.beta ;
-		rotz = e.rotationRate.gamma ;
-		interval = e.interval;
-		
-		acc[0] = ax;
-		acc[1] = ay;
-		acc[2] = az;
-		
-		gyro[0] = rotx;
-		gyro[1] = roty;
-		gyro[2] = rotz;
-
-		document.getElementById("interv").innerHTML =  'Interval : ' +  interval;
-		document.getElementById("xaccel").innerHTML =  'AccX : ' +  ax;
-		document.getElementById("yaccel").innerHTML = 'AccY : ' + ay;
-		document.getElementById("zaccel").innerHTML = 'AccZ : ' + az;
-		
-		document.getElementById("rotx").innerHTML = 'Rot X : ' + rotx ;
-		document.getElementById("roty").innerHTML = 'Rot Y : ' + roty ;
-		document.getElementById("rotz").innerHTML = 'Rot Z : ' + rotz ;
-		
-		dataSave(sensorType.ACC,acc);
-		dataSave(sensorType.GYRO,gyro);
-	});
-
-	
-	function getBatteryLevel(battery){
-		batteryLev = battery.level;
-		logging("battery level is " + batteryLev * 100 + "%");
-		document.getElementById("battLev").innerHTML = 'Batterys : ' + batteryLev;
-		dataSave(sensorType.Battery, batteryLev);
-	}
 
 	window.addEventListener('touchstart',function(e){
 		touchCnt += 1;
 		document.getElementById("touchCount").innerHTML = 'Touch : ' + touchCnt;
 	});
-
-	function batteryFunc(){
-		tizen.systeminfo.getPropertyValue("BATTERY", getBatteryLevel, onFailSensor);
-	}
-
-	handleBatt = window.setInterval(batteryFunc,60*1000);
-	function toggleHRM(){
-		if(isAwake){ //stop HRM for 9minute
-			if(isOn)
-				HAM.stop("HRM");
-			isAwake = false;
-			window.clearInterval(handleCPU);
-			handleCPU = window.setInterval(toggleHRM, 60000*30);
-		}
-		else{
-			if(!isOn)
-				HAM.start("HRM",readHR);
-			isAwake = true;
-			window.clearInterval(handleCPU);
-			handleCPU = window.setInterval(toggleHRM, 60000);
-		}
-	}
-	if(handleCPU == null){
-		HAM.start("HRM",readHR);
-		isAwake = true;
-		isOn = true;
-	}
 	
 	//app hide. Need to enable background-support in config.xml
 	bgBtn = document.getElementById("bg-btn");
@@ -336,19 +213,6 @@ $(window).load(function(){
 			buffer += timePrint(currTime)+","+ type +","+ value.toString() +"\n";
 		}
 	}
-	
-	function memoryCallback(memory){
-		memStat = memory.status;
-		if(memStat === "WARNING"){
-			dataSave(sensorType.Memory,1);
-			logging("Memory state is warning. Please save your memory");
-		}
-		else{
-			dataSave(sensorType.Memory,0);
-		}
-	}
-	
-	listenID = tizen.systeminfo.addPropertyValueChangeListener("MEMORY", memoryCallback, onFailSensor);
 	
 	function storeToFile(){
 		fileStream.write(buffer);
