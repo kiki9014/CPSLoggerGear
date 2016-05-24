@@ -55,19 +55,25 @@ $(window).load(function(){
 		window.clearInterval(saveID);
 	}
 	
+	function quitFunc(){
+		if (onSave) offSave();
+		if (!onSave){
+			endSensor();
+			tizen.alarm.removeAll();
+			tizen.power.release("CPU");
+			window.clearInterval(handleCPU);
+			endLogging();
+//			tizen.systeminfo.removePropertyValueChangeListener(listenID);
+			tizen.application.getCurrentApplication().exit();
+		}
+	}
+	
+	document.getElementById("quit-btn").addEventListener("click",quitFunc);
+	
 	//This listens for the back button press
 	document.addEventListener('tizenhwkey', function(e) {
 		if(e.keyName === "back"){
-//			if (onSave) offSave();
-			if (!onSave){
-				endSensor();
-				tizen.alarm.removeAll();
-				tizen.power.release("CPU");
-				window.clearInterval(handleCPU);
-				endLogging();
-//				tizen.systeminfo.removePropertyValueChangeListener(listenID);
-				tizen.application.getCurrentApplication().exit();
-			}
+			quitFunc();
 		}
 	});
 
