@@ -5,15 +5,7 @@ function whoAmI(){
 }
 
 var sensorType = {
-		ACC : 1,
-		GYRO : 2,
-		MAG : 3,
-		UV : 4,
-		Light : 5,
-		Pressure : 6,
-		HRM : 7,
-		Battery : 8,
-		Memory : 9
+		MAG : 3
 };
 
 $(window).load(function(){
@@ -25,12 +17,7 @@ $(window).load(function(){
 	startLogging();
 	
 	function endSensor(){
-		UVSensor.stop();
-		LSensor.stop();
 		MagSensor.stop();
-		PSensor.stop();
-		if (isAwake)
-			HAM.stop("HRM");
 	}
 	
 	//end save. close stream
@@ -109,12 +96,7 @@ $(window).load(function(){
 	
 	//Sensor service is require to start each sensor
 	SService = window.webapis&&window.webapis.sensorservice;	//tizen.sensorservice is not worked
-	UVSensor = SService.getDefaultSensor("ULTRAVIOLET");
-	LSensor = SService.getDefaultSensor("LIGHT");
 	MagSensor = SService.getDefaultSensor("MAGNETIC");
-	PSensor = SService.getDefaultSensor("PRESSURE");
-	HAM = (tizen&&tizen.humanactivitymonitor)||(window.webapis&&window.webapis.motion);	//Heart Rate is another application, not sensor service
-	
 	MagSensor.start(onStartSensor, onFailSensor);
 	
 	MagSensor.setChangeListener(function(data){
@@ -135,12 +117,6 @@ $(window).load(function(){
 		touchCnt += 1;
 		document.getElementById("touchCount").innerHTML = 'Touch : ' + touchCnt;
 	});
-
-	if(handleCPU == null){
-		HAM.start("HRM",readHR);
-		isAwake = true;
-		isOn = true;
-	}
 	
 	//app hide. Need to enable background-support in config.xml
 	bgBtn = document.getElementById("bg-btn");
