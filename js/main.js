@@ -201,7 +201,7 @@ $(window).load(function(){
 	function getBatteryLevel(battery){
 		batteryLev = battery.level;
 		logging("battery level is " + batteryLev * 100 + "%");
-		document.getElementById("battLev").innerHTML = 'Batterys : ' + batteryLev;
+		document.getElementById("battLev").innerHTML = 'Battery : ' + batteryLev;
 		dataSave(sensorType.Battery, batteryLev);
 	}
 
@@ -277,7 +277,7 @@ $(window).load(function(){
 		if(previousState !== "SCREEN_NORMAL" && changedState === "SCREEN_NORMAL"){
 			var audioName = timePrint(tizen.time.getCurrentDateTime());
 			
-			startRecord(audioName + ".amr", 5000, false);
+//			startRecord(audioName + ".amr", 5000, false);
 		}
 	}
 	
@@ -292,24 +292,24 @@ $(window).load(function(){
 				break;
 			case "surveyStart":
 				if(audioBusy){
-					stopRecord();
+//					stopRecord();
 				}
 				var audioName = timePrint(tizen.time.getCurrentDateTime());
 				isOn = true;
-				startRecord("UserInput"+audioName+".amr",5000,true);
+//				startRecord("UserInput"+audioName+".amr",5000,true);
 				logging("surveyStart");
 				totDel = 0;
 				delayVal = 0;
 				break;
 			case "surveyEnd":
-				stopRecord();
+//				stopRecord();
 				isOn = false;
 				logging("successfully removed surveyAlarm");
 				surveyAlarm = setSurvey(30);
 				logging("successfully reset surveyAlarm");
 				break;
 			case "recordPause":
-				stopRecord();
+//				stopRecord();
 				break;
 			case "postpone":
 				delayVal = data[1].value;
@@ -354,4 +354,5 @@ $(window).load(function(){
 		fileStream.write(buffer);
 		buffer = "";
 	}
+//	console.log("Complete Open")
 });

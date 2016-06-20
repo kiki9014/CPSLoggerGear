@@ -46,4 +46,4 @@ function resumeRecord(){
 	},errorCallback);
 }
 
-createControl();
+//createControl();
