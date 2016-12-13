@@ -48,7 +48,6 @@ $(window).load(function(){
 			endSensor();
 			tizen.alarm.removeAll();
 			tizen.power.release("CPU");
-			window.clearInterval(handleCPU);
 			endLogging();
 			tizen.application.getCurrentApplication().exit();
 		}
@@ -109,7 +108,7 @@ $(window).load(function(){
 	document.getElementById("time").innerHTML = "Start at " + timeStamp();
 	
 	//Sensor service is require to start each sensor
-	SService = window.webapis&&window.webapis.sensorservice;	//tizen.sensorservice is not worked
+	SService = window.webapis.sensorservice;	//tizen.sensorservice is not worked
 	UVSensor = SService.getDefaultSensor("ULTRAVIOLET");
 	LSensor = SService.getDefaultSensor("LIGHT");
 	MagSensor = SService.getDefaultSensor("MAGNETIC");
@@ -123,13 +122,8 @@ $(window).load(function(){
 	PSensor.start(onStartSensor, onFailSensor);
 	
 	//add listener. listener is called when sensor value has changed
-	UVSensor.setChangeListener(function(data){
-		document.getElementById("UV").innerHTML = 'UV : ' + data.ultravioletLevel;
-
-		dataSave(sensorType.UV, data.ultravioletLevel);
-	});
-
-	MagSensor.setChangeListener(function(data){
+	
+	magGetData = function(data){
 		mag = [];
 		
 		document.getElementById("xmag").innerHTML = 'Mag X : ' + data.x;
@@ -141,19 +135,33 @@ $(window).load(function(){
 		mag[2] = data.z;
 		
 		dataSave(sensorType.MAG,mag);
-	});
+	};
 	
-	LSensor.setChangeListener(function(data){
+	lightGetData = function(data){
 		document.getElementById("light").innerHTML = 'Light : ' + data.lightLevel;
 		
 		dataSave(sensorType.Light, data.lightLevel);
-	});
+	};
 	
-	PSensor.setChangeListener(function(data){
+	pressGetData = function(data){
 		document.getElementById("press").innerHTML = 'Pressure : ' + data.pressure;
 		
 		dataSave(sensorType.Pressure, data.pressure);
-	});
+	};
+	
+	UVGetData = function(data){
+		document.getElementById("UV").innerHTML = 'UV : ' + data.ultravioletLevel;
+
+		dataSave(sensorType.UV, data.ultravioletLevel);
+	};
+	
+	MagSensor.setChangeListener(magGetData);
+	
+	LSensor.setChangeListener(lightGetData);
+	
+	PSensor.setChangeListener(pressGetData);
+	
+	UVSensor.setChangeListener(UVGetData);
 
 	//start Heart Rate sensor
 	
@@ -196,12 +204,18 @@ $(window).load(function(){
 		dataSave(sensorType.ACC,acc);
 		dataSave(sensorType.GYRO,gyro);
 	});
+	
+	window.addEventListener('deviceorientation', function(e){
+		console.log("alpha : " + e.alpha + ", beta : " + e.beta + ", gamma : " + e.gamma);
+	});
 
 	
 	function getBatteryLevel(battery){
 		batteryLev = battery.level;
 		logging("battery level is " + batteryLev * 100 + "%");
 		document.getElementById("battLev").innerHTML = 'Battery : ' + batteryLev;
+		
+		console.log("Battery value is " + battery.level);
 		dataSave(sensorType.Battery, batteryLev);
 	}
 
@@ -212,30 +226,14 @@ $(window).load(function(){
 
 	function batteryFunc(){
 		tizen.systeminfo.getPropertyValue("BATTERY", getBatteryLevel, onFailSensor);
+		if(!tizen.power.isScreenOn())
+//			tizen.power.turnScreenOn();
+		
+		console.log("I'm working!");
 	}
 
 	handleBatt = window.setInterval(batteryFunc,60*1000);
-	function toggleHRM(){
-		if(isAwake){ //stop HRM for 9minute
-			if(isOn)
-				HAM.stop("HRM");
-			isAwake = false;
-			window.clearInterval(handleCPU);
-			handleCPU = window.setInterval(toggleHRM, 60000*30);
-		}
-		else{
-			if(!isOn)
-				HAM.start("HRM",readHR);
-			isAwake = true;
-			window.clearInterval(handleCPU);
-			handleCPU = window.setInterval(toggleHRM, 60000);
-		}
-	}
-	if(handleCPU == null){
-		HAM.start("HRM",readHR);
-		isAwake = true;
-		isOn = true;
-	}
+	HAM.start("HRM",readHR);
 	
 	//app hide. Need to enable background-support in config.xml
 	bgBtn = document.getElementById("bg-btn");
@@ -274,11 +272,6 @@ $(window).load(function(){
 	
 	function onScreenStateChanged(previousState, changedState){
 		logging("state Changed from " + previousState + " to " + changedState);
-		if(previousState !== "SCREEN_NORMAL" && changedState === "SCREEN_NORMAL"){
-			var audioName = timePrint(tizen.time.getCurrentDateTime());
-			
-//			startRecord(audioName + ".amr", 5000, false);
-		}
 	}
 	
 	try{
@@ -291,25 +284,19 @@ $(window).load(function(){
 				remote.sendMessage([{key:"values", value:surveyCnt++}]);
 				break;
 			case "surveyStart":
-				if(audioBusy){
-//					stopRecord();
-				}
 				var audioName = timePrint(tizen.time.getCurrentDateTime());
 				isOn = true;
-//				startRecord("UserInput"+audioName+".amr",5000,true);
 				logging("surveyStart");
 				totDel = 0;
 				delayVal = 0;
 				break;
 			case "surveyEnd":
-//				stopRecord();
 				isOn = false;
 				logging("successfully removed surveyAlarm");
 				surveyAlarm = setSurvey(30);
 				logging("successfully reset surveyAlarm");
 				break;
 			case "recordPause":
-//				stopRecord();
 				break;
 			case "postpone":
 				delayVal = data[1].value;
@@ -318,8 +305,9 @@ $(window).load(function(){
 				break;
 			case "checkDelayed" : 
 				remote.sendMessage([{key:"values", value:totDel}]);
+				break;
 			default :
-				logging("wrong Command");
+				logging("wrong Command : " + data[0].value);
 			}
 		});
 	}

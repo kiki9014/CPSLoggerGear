@@ -1,7 +1,7 @@
 var alarm = [], surveyAlarm;
 
 /*setting alarms*/
-alarm[0] = new tizen.AlarmAbsolute(new Date(2015,9,14,13,10),5*tizen.alarm.PERIOD_MINUTE);
+//alarm[0] = new tizen.AlarmAbsolute(new Date(2015,9,14,13,10),5*tizen.alarm.PERIOD_MINUTE);
 var appCntl = new tizen.ApplicationControl("http://tizen.org/appcontrol/operation/view");
 
 function setSurvey(minute){

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets" id="http://yourdomain/SimpleSensor" version="1.0.0" viewmodes="fullscreen">
+<widget xmlns:tizen="http://tizen.org/ns/widgets" xmlns="http://www.w3.org/ns/widgets" id="http://yourdomain/SimpleSensor" version="1.0.0" viewmodes="fullscreen">
     <tizen:application id="jA178rrw6Z.AccelerometerTutorial" package="jA178rrw6Z" required_version="2.2.1.3"/>
     <content src="index.html"/>
     <feature name="http://tizen.org/feature/screen.size.normal.320.320"/>
@@ -16,7 +16,7 @@
     <feature name="http://tizen.org/feature/microphone"/>
     <feature name="http://tizen.org/feature/camera"/>
     <icon src="icon.png"/>
-    <name>Accelerometer Tutorial </name>
+    <name>GearSensingApp</name>
     <tizen:privilege name="http://tizen.org/privilege/application.launch"/>
     <tizen:privilege name="http://tizen.org/privilege/filesystem.read"/>
     <tizen:privilege name="http://developer.samsung.com/privilege/accessoryprotocol"/>
@@ -32,5 +32,5 @@
     <tizen:privilege name="http://tizen.org/privilege/camera"/>
     <tizen:privilege name="http://tizen.org/privilege/systemmanager"/>
     <tizen:privilege name="http://tizen.org/privilege/telephony"/>
-    <tizen:setting background-support="enable" encryption="disable" hwkey-event="enable"/>
+    <tizen:setting screen-orientation="portrait" context-menu="enable" background-support="enable" encryption="disable" install-location="auto" hwkey-event="enable"/>
 </widget>
