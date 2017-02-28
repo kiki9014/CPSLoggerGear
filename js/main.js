@@ -24,6 +24,7 @@ $(window).load(function(){
 	
 	startLogging();
 	
+	//end sensors
 	function endSensor(){
 		UVSensor.stop();
 		LSensor.stop();
@@ -39,6 +40,7 @@ $(window).load(function(){
 		onSave = false;
 		fileStream.close();
 		document.getElementById("isSave").innerHTML = "Save OFF";
+		document.getElementById("save-btn").innerHTML = "Start Save";
 		window.clearInterval(saveID);
 	}
 	
@@ -122,7 +124,6 @@ $(window).load(function(){
 	PSensor.start(onStartSensor, onFailSensor);
 	
 	//add listener. listener is called when sensor value has changed
-	
 	magGetData = function(data){
 		mag = [];
 		
@@ -136,19 +137,16 @@ $(window).load(function(){
 		
 		dataSave(sensorType.MAG,mag);
 	};
-	
 	lightGetData = function(data){
 		document.getElementById("light").innerHTML = 'Light : ' + data.lightLevel;
 		
 		dataSave(sensorType.Light, data.lightLevel);
 	};
-	
 	pressGetData = function(data){
 		document.getElementById("press").innerHTML = 'Pressure : ' + data.pressure;
 		
 		dataSave(sensorType.Pressure, data.pressure);
 	};
-	
 	UVGetData = function(data){
 		document.getElementById("UV").innerHTML = 'UV : ' + data.ultravioletLevel;
 
@@ -156,15 +154,11 @@ $(window).load(function(){
 	};
 	
 	MagSensor.setChangeListener(magGetData);
-	
 	LSensor.setChangeListener(lightGetData);
-	
 	PSensor.setChangeListener(pressGetData);
-	
 	UVSensor.setChangeListener(UVGetData);
 
 	//start Heart Rate sensor
-	
 	function readHR(data){
 		document.getElementById("heart").innerHTML = 'HeartRate : ' + data.heartRate;
 		
@@ -209,7 +203,7 @@ $(window).load(function(){
 		console.log("alpha : " + e.alpha + ", beta : " + e.beta + ", gamma : " + e.gamma);
 	});
 
-	
+	//add battery level listener
 	function getBatteryLevel(battery){
 		batteryLev = battery.level;
 		logging("battery level is " + batteryLev * 100 + "%");
@@ -219,11 +213,6 @@ $(window).load(function(){
 		dataSave(sensorType.Battery, batteryLev);
 	}
 
-	window.addEventListener('touchstart',function(e){
-		touchCnt += 1;
-		document.getElementById("touchCount").innerHTML = 'Touch : ' + touchCnt;
-	});
-
 	function batteryFunc(){
 		tizen.systeminfo.getPropertyValue("BATTERY", getBatteryLevel, onFailSensor);
 		if(!tizen.power.isScreenOn())
@@ -231,8 +220,14 @@ $(window).load(function(){
 		
 		console.log("I'm working!");
 	}
-
 	handleBatt = window.setInterval(batteryFunc,60*1000);
+
+	window.addEventListener('touchstart',function(e){
+		touchCnt += 1;
+		document.getElementById("touchCount").innerHTML = 'Touch : ' + touchCnt;
+	});
+
+	//start heartrate listener
 	HAM.start("HRM",readHR);
 	
 	//app hide. Need to enable background-support in config.xml
@@ -246,22 +241,27 @@ $(window).load(function(){
 	//start save. open stream to save
 	saveBtn = document.getElementById("save-btn");
 	saveBtn.addEventListener("click", function(){
-		newFile.openStream("a",
-			function(fs){
-				fileStream = fs;
-				logging("Hello gear!");
-				onSave = true;
-				
-				saveID = window.setInterval(storeToFile,1000);
-			}, function(e){
-				logging("error : " + e.message);
-		});
-		surveyAlarm = setSurvey(30);
-		document.getElementById("isSave").innerHTML = "Save ON";
+		if(!onSave) {
+			newFile.openStream("a",
+					function(fs){
+						fileStream = fs;
+						logging("Hello gear!");
+						onSave = true;
+						
+						saveID = window.setInterval(storeToFile,1000);
+					}, function(e){
+						logging("error : " + e.message);
+				});
+				surveyAlarm = setSurvey(30);
+				document.getElementById("isSave").innerHTML = "Save ON";
+				document.getElementById("save-btn").innerHTML = "Stop Save";
+		}
+		else {
+			offSave();
+		}
 	});//add event listener to save button
 
-	endSaveBtn = document.getElementById("saveEnd-btn");
-	endSaveBtn.addEventListener("click", offSave);//add event listener to save end button	
+	//add message port to communicate with survey app
 	try{
 		localPort = tizen.messageport.requestLocalMessagePort("SAMPLE_PORT_1");
 		remotePort = tizen.messageport.requestRemoteMessagePort("lfAUvVJvBV.SurveyApp","SAMPLE_PORT_2");
@@ -270,11 +270,13 @@ $(window).load(function(){
 		logging(e.message);
 	}
 	
+	//add screen state logger
 	function onScreenStateChanged(previousState, changedState){
 		logging("state Changed from " + previousState + " to " + changedState);
 	}
 	
 	try{
+		//communication part with survey
 		watchID = localPort.addMessagePortListener(function(data, remote){
 			switch(data[0].value){
 			case "heartRate":
@@ -317,6 +319,7 @@ $(window).load(function(){
 
 	tizen.power.setScreenStateChangeListener(onScreenStateChanged);
 	logging("Sensor loaded");
+	//data save function. not direct save to file: save to buffer and save every minute
 	function dataSave(type, value){
 		//save all data to txt
 		if(onSave === true){
@@ -342,5 +345,4 @@ $(window).load(function(){
 		fileStream.write(buffer);
 		buffer = "";
 	}
-//	console.log("Complete Open")
 });
